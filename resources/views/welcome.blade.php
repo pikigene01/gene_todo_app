@@ -87,7 +87,7 @@
                                     <i class="fa fa-plus"></i>
                                 </button>
                             </form>
-                            <p>Tasks</p>
+                            <p>Todos</p>
                         </header>
                         <section class="bg-light lter">
                             <section class="hbox stretch" >
