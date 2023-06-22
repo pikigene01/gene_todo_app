@@ -19,24 +19,26 @@ use App\Http\Controllers\UsersController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-})->middleware(['auth']);
-Route::get('/welcome', function () {
-    return view('welcome');
-})->middleware(['auth']);
+Route::get('/', [TodoController::class, 'index'])->name('home')->middleware(['auth']);
+Route::get('/welcome', [TodoController::class, 'index'])->middleware(['auth']);
 Route::get('/todos', [TodoController::class, 'index'])->name('todos')
 ->middleware(['auth']);
 Route::get('/users', [UsersController::class, 'index'])->name('users')
 ->middleware(['auth']);
 Route::post('/create-user', [UsersController::class, 'store']);
+Route::post('/create-todo', [TodoController::class, 'store'])->name('createTodo')
+->middleware(['auth']);
 Route::get('/create-user', [UsersController::class, 'create'])->name('create-user')
 ->middleware(['auth']);
 Route::post('/userEdit/{id}', [UsersController::class, 'edit'])
 ->middleware(['auth']);
+Route::post('/todoEdit/{id}', [TodoController::class, 'edit'])
+->middleware(['auth']);
 Route::get('/userEdit/{id}', [UsersController::class, 'view'])
 ->middleware(['auth']);
 Route::post('/userDelete/{id}', [UsersController::class, 'destroy'])
+->middleware(['auth']);
+Route::post('/todoDelete/{id}', [TodoController::class, 'destroy'])
 ->middleware(['auth']);
 Route::get('/login', function () {
     return view('auth.login');

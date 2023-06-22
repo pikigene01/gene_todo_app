@@ -24,12 +24,12 @@
                     <nav class="nav-primary hidden-xs">
                         <h5>Logged in as: {{ Auth::user()->name }}</h5>
                         <ul class="nav">
-                            @if(Auth::user()->role == 1)
-                            <li>
-                                <a href="/users">
-                                    <i class="fa fa-users"></i> <span>Users</span>
-                                </a>
-                            </li>
+                            @if (Auth::user()->role == 1)
+                                <li>
+                                    <a href="/users">
+                                        <i class="fa fa-users"></i> <span>Users</span>
+                                    </a>
+                                </li>
                             @endif
                             <li>
                                 <a href="/todos">
@@ -37,20 +37,21 @@
                                 </a>
                             </li>
                             <li>
-                                <form method="POST" action="/delete/{{Auth::user()->id}}">
+                                <form method="POST" action="/delete/{{ Auth::user()->id }}">
                                     @csrf
 
-                                    <button type="submit" class="btn btn-danger"><i class="fa fa-flag"></i> <span>Delete Account</span> </button>
+                                    <button type="submit" class="btn btn-danger"><i class="fa fa-flag"></i> <span>Delete
+                                            Account</span> </button>
 
                                 </form>
                             </li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                            <li>
-                                <button type="submit" class="btn btn-danger mb-20">
-                                    <i class="fa fa-flag"></i> <span>Logout</span>
-                                </button>
-                            </li>
+                                <li>
+                                    <button type="submit" class="btn btn-danger mb-20">
+                                        <i class="fa fa-flag"></i> <span>Logout</span>
+                                    </button>
+                                </li>
                             </form>
                         </ul>
                     </nav>
@@ -79,40 +80,68 @@
                 <aside>
                     <section class="vbox">
                         <header class="header bg-light lter bg-gradient b-b">
-                            <button class="btn btn-success btn-sm pull-right btn-icon" id="new-task">
-                                <i class="fa fa-plus"></i>
-                            </button>
+                            <form method="POST" action="{{ route('createTodo') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-success btn-sm pull-right btn-icon"
+                                    title="create task">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </form>
                             <p>Tasks</p>
                         </header>
                         <section class="bg-light lter">
-                            <section class="hbox stretch">
-                                <!-- .aside -->
-                                <aside>
-                                    <section class="vbox">
-                                        <section class="scrollable wrapper">
-                                            <!-- task list -->
-                                            <ul id="task-list" class="list-group list-group-sp"></ul>
-                                            <!-- templates -->
-                                            <script type="text/template" id="item-template">
-                        <div class="view" id="task-<%- id %>"> <button class="destroy close hover-action">
-                            &times;</button> <div class="checkbox"> <input class="toggle" type="checkbox" <%= done ? 'checked="checked"' : '' %> />
-                                <span class="task-name"><%- (name && name.length) ? name : 'New task' %></span>
-                                <input class="edit form-control" type="text" value="<%- name %>" /> </div> </div>
-                      </script>
-                                            <!-- / template -->
-                                            <!-- task list -->
-                                        </section>
+                            <section class="hbox stretch" >
+
+                                <section class="vbox">
+                                    <section class="scrollable wrapper">
+                                        <!-- task list -->
+                                        <ul id="task-list" class="list-group list-group-sp"></ul>
+                                        @if (count($todos) > 0)
+
+                                            @foreach ($todos as $todo)
+                                                <div class="view" id="{{ $todo->id }}">
+
+                                                    <form method="POST" action="/todoEdit/{{ $todo->id }}">
+                                                        @csrf
+                                                        <div class="checkbox">
+                                                            <input class="toggle" name="is_completed" type="checkbox"
+                                                                value="{{ $todo->is_completed }}"
+                                                                {{ $todo->is_completed ? 'checked' : '' }} />
+
+                                                            <span class="task-name">{{ $todo->todo }}</span>
+                                                            <input name="todo" class="edit form-control" type="text"
+                                                                value="{{ $todo->todo }}" />
+
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Update</button>
+                                                    </form>
+                                                    <form method="POST" action="/todoDelete/{{ $todo->id }}">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-danger">
+                                                            Delete
+                                                            &times;
+                                                        </button>
+
+                                                    </form>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <form method="POST" action="{{ route('createTodo') }}">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success"> Create Todo</button>
+
+                                            </form>
+
+                                        @endif
+
+
+                                        <!-- task list -->
                                     </section>
-                                </aside>
-                                <!-- /.aside -->
+                                </section>
+
                             </section>
                         </section>
-                        <footer class="footer bg-white-only b-t">
-                            <p class="checkbox">
-                                <label><input id="toggle-all" type="checkbox" /> Mark all as
-                                    complete</label>
-                            </p>
-                        </footer>
+
                     </section>
                 </aside>
                 <!-- .aside -->
@@ -123,9 +152,7 @@
               <header class="header bg-light lt b-b">  </header> <section> <section> <section> <ul id="task-comment" class="list-group no-radius no-border m-t-n-xxs"> </ul> </section> </section> </section> <footer class="footer bg-light lter clearfix b-t"> <div class="input-group m-t-sm">  </footer>
             </script>
                         <!-- task detail -->
-                        <script type="text/template" id="item-c-template">
-              <div class="view"> <button class="destroy close hover-action">&times;</button> <div> <span><%- desc %></span> <small class="text-muted block text-xs"><i class="fa fa-clock-o"></i> <%- moment(date).fromNow() %></small> </div> </div>
-            </script>
+
                     </section>
                 </aside>
                 <!-- /.aside -->
@@ -134,5 +161,18 @@
         <!-- /.vbox -->
     </section>
 
+    <script>
+        const toggle = document.querySelectorAll('.toggle');
+        toggle.forEach((tg) => {
+            tg.oninput = (e) => {
+                let value = e.target.value;
+                if (value == 0) {
+                    e.target.setAttribute('value', true);
+                } else {
+                    e.target.setAttribute('value', false);
+                }
+            }
+        })
+    </script>
 
 @stop
