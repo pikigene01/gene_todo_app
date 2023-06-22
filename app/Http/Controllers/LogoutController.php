@@ -10,6 +10,6 @@ class LogoutController extends Controller
 
         \Auth::logout();
 
-        return redirect()->back()->with(['message']);
+        return redirect()->back()->with(['message'=>'You have been logged out successfully!!!']);
     }
 }
